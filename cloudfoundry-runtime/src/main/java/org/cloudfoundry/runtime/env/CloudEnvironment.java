@@ -49,6 +49,7 @@ public class CloudEnvironment {
 		labelledServiceType(RedisServiceInfo.class, "redis");
 		labelledServiceType(MongoServiceInfo.class, "mongodb");
 		labelledServiceType(RabbitServiceInfo.class, "rabbitmq");
+        labelledServiceType(CassandraServiceInfo.class, "cassandra");
 	}
 	
 	/* package for testing purpose */
