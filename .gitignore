@@ -5,6 +5,7 @@
 target/
 build/
 eclipse-base.tar.gz
+*.iml
 eclipse/
 org.eclipse.releng.basebuilder/
 org.eclipse.releng.basebuilder.zip
@@ -13,3 +14,4 @@ com.vmware.sts.server.appcloud.releng/springsource/
 .classpath
 .project
 .settings
+out
