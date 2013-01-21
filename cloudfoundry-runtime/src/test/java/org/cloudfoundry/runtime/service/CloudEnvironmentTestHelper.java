@@ -18,9 +18,24 @@ public class CloudEnvironmentTestHelper {
 		payload = payload.replace("$port", Integer.toString(port));
 		payload = payload.replace("$password", password);
 		payload = payload.replace("$name", name);
-		
+
 		return payload;
 	}
+
+    public static String getCassandraServicePayload(String version, String serviceName,
+                                                String hostname, int port,
+                                                String password, String name, String username) {
+        String payload = readTestDataFile("test-cassandra-info.json");
+        payload = payload.replace("$version", version);
+        payload = payload.replace("$serviceName", serviceName);
+        payload = payload.replace("$hostname", hostname);
+        payload = payload.replace("$port", Integer.toString(port));
+        payload = payload.replace("$password", password);
+        payload = payload.replace("$name", name);
+        payload = payload.replace("$username", username);
+
+        return payload;
+    }
 
 	public static String getMongoServicePayload(String version, String serviceName,
 			String hostname, int port,

@@ -1,13 +1,6 @@
 package org.cloudfoundry.runtime.env;
 
-import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getApplicationInstanceInfo;
-import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getMongoServicePayload;
-import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getMysqlServicePayload;
-import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getPostgreSQLServicePayload;
-import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRabbitSRSServicePayload;
-import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRabbitServicePayload;
-import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRedisServicePayload;
-import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getServicesPayload;
+import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -68,6 +61,27 @@ public class CloudEnvironmentTest {
 			assertEquals(serviceName, info.getServiceName());
 			assertEquals(hostname, info.getHost());
 			assertEquals(port, info.getPort());
+		}
+	}
+
+    @Test
+	public void getServiceInfoCassandra() {
+		String serviceName = "cassandra-1";
+
+		String[] versions = {"1.1.6"};
+		for (String version : versions) {
+			when(mockEnvironment.getValue("VCAP_SERVICES"))
+				.thenReturn(getServicesPayload(null,
+											   new String[]{getCassandraServicePayload(version, serviceName, hostname, port, password, "clusterName", username)},
+											   null,
+											   null));
+			CassandraServiceInfo info = testRuntime.getServiceInfo("cassandra-1", CassandraServiceInfo.class);
+			assertEquals(serviceName, info.getServiceName());
+			assertEquals(hostname, info.getHost());
+			assertEquals(port, info.getPort());
+			assertEquals("clusterName", info.getClusterName());
+			assertEquals(password, info.getPassword());
+			assertEquals(username, info.getUserName());
 		}
 	}
 
