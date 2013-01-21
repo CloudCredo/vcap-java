@@ -10,8 +10,15 @@ import java.util.Map;
  */
 public class CassandraServiceInfo extends BaseServiceInfo {
 
-    private String database;
+    /**
+     * The username of the provisioned service instance
+     */
     private String userName;
+
+    /**
+     * The name of the cluster on provisioned Cassandra instances
+     */
+    private String clusterName;
 
     public CassandraServiceInfo(Map<String, Object> serviceInfo) {
 
@@ -20,14 +27,20 @@ public class CassandraServiceInfo extends BaseServiceInfo {
         Map<String, Object> credentials = (Map<String, Object>) serviceInfo.get("credentials");
 
         userName = (String) credentials.get("username");
-        database = (String) credentials.get("db");
+        clusterName = (String) credentials.get("name");
     }
 
+    /**
+     * The username of the provisioned service instance
+     */
     public String getUserName() {
         return userName;
     }
 
-    public String getDatabase() {
-        return database;
+    /**
+     * The name of the cluster for the provisioned Cassandra instances
+     */
+    public String getClusterName() {
+        return clusterName;
     }
 }
