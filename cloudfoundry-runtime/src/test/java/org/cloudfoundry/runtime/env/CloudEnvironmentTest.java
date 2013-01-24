@@ -17,7 +17,7 @@ import org.mockito.MockitoAnnotations;
 
 /**
  * Unit test for CloudEnvironment
- * 
+ *
  * @author Ramnivas Laddad
  * @author Scott Andrews
  */
@@ -34,10 +34,10 @@ public class CloudEnvironmentTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		
+
 		testRuntime.setCloudEnvironment(mockEnvironment);
 	}
-	
+
 	@Test
 	public void isCloudFoundry() {
 		assertFalse(testRuntime.isCloudFoundry());
@@ -64,33 +64,12 @@ public class CloudEnvironmentTest {
 		}
 	}
 
-    @Test
-	public void getServiceInfoCassandra() {
-		String serviceName = "cassandra-1";
-
-		String[] versions = {"1.1.6"};
-		for (String version : versions) {
-			when(mockEnvironment.getValue("VCAP_SERVICES"))
-				.thenReturn(getServicesPayload(null,
-											   new String[]{getCassandraServicePayload(version, serviceName, hostname, port, password, "clusterName", username)},
-											   null,
-											   null));
-			CassandraServiceInfo info = testRuntime.getServiceInfo("cassandra-1", CassandraServiceInfo.class);
-			assertEquals(serviceName, info.getServiceName());
-			assertEquals(hostname, info.getHost());
-			assertEquals(port, info.getPort());
-			assertEquals("clusterName", info.getClusterName());
-			assertEquals(password, info.getPassword());
-			assertEquals(username, info.getUserName());
-		}
-	}
-
 	@Test
 	public void getServiceInfoMongo() {
 		String serviceName = "mongo-1";
 		String database = "mongo-db";
 		String name = "mongo-name";
-		
+
 		String[] versions = {"1.8", "2.0"};
 		for (String version : versions) {
 			when(mockEnvironment.getValue("VCAP_SERVICES"))
@@ -124,7 +103,7 @@ public class CloudEnvironmentTest {
 			assertEquals(password, info.getPassword());
 		}
 	}
-	
+
 	@Test
 	public void getServiceInfoPostgresql() {
 		String[] versions = {"9.0", "9.1"};
@@ -150,7 +129,7 @@ public class CloudEnvironmentTest {
 	public void getServiceInfoRabbit() {
 		String serviceName = "rabbit-1";
 		String vHost = "vhost-1";
-		
+
 		String[] versions = {"2.4", "2.6"};
 		for (String version : versions) {
 			when(mockEnvironment.getValue("VCAP_SERVICES"))
@@ -198,7 +177,7 @@ public class CloudEnvironmentTest {
 			.thenReturn(appInfo);
 		assertEquals("api.cloudfoundry.com", testRuntime.getCloudApiUri());
 	}
-	
+
 	@Test(expected=IllegalArgumentException.class)
 	public void getCloudApiUriNonVcap() {
 		when(mockEnvironment.getValue("VCAP_APPLICATION"))

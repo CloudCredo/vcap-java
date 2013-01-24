@@ -22,21 +22,6 @@ public class CloudEnvironmentTestHelper {
 		return payload;
 	}
 
-    public static String getCassandraServicePayload(String version, String serviceName,
-                                                String hostname, int port,
-                                                String password, String name, String username) {
-        String payload = readTestDataFile("test-cassandra-info.json");
-        payload = payload.replace("$version", version);
-        payload = payload.replace("$serviceName", serviceName);
-        payload = payload.replace("$hostname", hostname);
-        payload = payload.replace("$port", Integer.toString(port));
-        payload = payload.replace("$password", password);
-        payload = payload.replace("$name", name);
-        payload = payload.replace("$username", username);
-
-        return payload;
-    }
-
 	public static String getMongoServicePayload(String version, String serviceName,
 			String hostname, int port,
 			String username, String password, String db, String name) {
@@ -146,8 +131,9 @@ public class CloudEnvironmentTestHelper {
 			payload.append(getServicePayload(rabbitServicePayloads));
 		}
 		payload.append("}");
-		
-		return payload.toString();
+
+        System.out.println(payload.toString());
+        return payload.toString();
 	}
 	
 	public static String getApplicationInstanceInfo(String name, String... uri) {

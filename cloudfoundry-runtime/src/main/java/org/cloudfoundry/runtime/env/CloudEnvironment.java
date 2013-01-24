@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
+import org.cloudfoundry.runtime.env.scanning.ServiceInfoProviderClasspathScanner;
 import org.codehaus.jackson.map.ObjectMapper;
 
 /**
@@ -18,7 +19,7 @@ import org.codehaus.jackson.map.ObjectMapper;
  * This class interprets environment variables and provide a simple
  * access without needing JSON parsing.
  * </p>
- * 
+ *
  * @author Ramnivas Laddad
  * @author Scott Andrews
  * @author Thomas Risberg
@@ -49,18 +50,31 @@ public class CloudEnvironment {
 		labelledServiceType(RedisServiceInfo.class, "redis");
 		labelledServiceType(MongoServiceInfo.class, "mongodb");
 		labelledServiceType(RabbitServiceInfo.class, "rabbitmq");
-        labelledServiceType(CassandraServiceInfo.class, "cassandra");
+        //labelledServiceType(CassandraServiceInfo.class, "cassandra");
+
+        addServiceInfoProvidersFromClasspath();
 	}
-	
-	/* package for testing purpose */
+
+    /**
+     * Add the AbstractServiceInfo Class objects that were found on the classpath.
+     */
+    private static void addServiceInfoProvidersFromClasspath() {
+        ServiceInfoProviderClasspathScanner scanner = new ServiceInfoProviderClasspathScanner(new ServiceInfoProviderClasspathScanner.ProductionClassLoaderStrategy());
+        Map<String, Class<? extends AbstractServiceInfo>> providers = scanner.getServiceInfoProviders();
+        for (String s : providers.keySet()) {
+            labelledServiceType(providers.get(s), s);
+        }
+    }
+
+    /* package for testing purpose */
 	void setCloudEnvironment(EnvironmentAccessor environment) {
 		this.environment = environment;
 	}
-	
+
 	public String getValue(String key) {
 		return environment.getValue(key);
 	}
-	
+
 	public boolean isCloudFoundry() {
 		return getValue("VCAP_APPLICATION") != null;
 	}
@@ -76,9 +90,9 @@ public class CloudEnvironment {
 			return new ApplicationInstanceInfo(infoMap);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
-		} 
+		}
 	}
-	
+
 	public String getCloudApiUri() {
 		ApplicationInstanceInfo instanceInfo = getInstanceInfo();
 		if (instanceInfo == null) {
@@ -88,13 +102,13 @@ public class CloudEnvironment {
 		String defaultUri = uris.get(0);
 		return "api" + defaultUri.substring(defaultUri.indexOf("."));
 	}
-	
+
 	/**
 	 * Return object representation of the VCAP_SERIVCES environment variable
 	 * <p>
-	 * Returns a map whose key is the label (for example "redis-2.2") of the 
+	 * Returns a map whose key is the label (for example "redis-2.2") of the
 	 * service and value is a list of services for that label. Each list element
-	 * is a map with service attributes. 
+	 * is a map with service attributes.
 	 * </p>
 	 * @return
 	 */
@@ -108,22 +122,22 @@ public class CloudEnvironment {
 			return objectMapper.readValue(servicesString, Map.class);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
-		} 
+		}
 	}
-	
+
 	public List<Map<String,Object>> getServices() {
 		Map<String, List<Map<String,Object>>> rawServices = getRawServices();
-		
+
 		List<Map<String,Object>> flatServices = new ArrayList<Map<String,Object>>();
 		for (Map.Entry<String, List<Map<String,Object>>> entry : rawServices.entrySet()) {
 			flatServices.addAll(entry.getValue());
 		}
 		return flatServices;
 	}
-	
+
 	private Map<String, Object> getServiceDataByName(String name) {
 		List<Map<String, Object>> services = getServices();
-		
+
 		for (Map<String, Object> service : services) {
 			if (service.get("name").equals(name)) {
 				return service;
@@ -156,7 +170,7 @@ public class CloudEnvironment {
 		}
 	}
 
-	public <T extends AbstractServiceInfo> List<T> getServiceInfos(Class<T> serviceInfoType) {
+    public <T extends AbstractServiceInfo> List<T> getServiceInfos(Class<T> serviceInfoType) {
 		Set<String> labels = serviceTypeToLabels.get(serviceInfoType);
 		List<T> serviceInfos = new ArrayList<T>();
 
@@ -278,7 +292,7 @@ public class CloudEnvironment {
 
 	/**
 	 * Environment available to the deployed app.
-	 * 
+	 *
 	 * The main purpose of this class is to allow unit-testing of {@link CloudEnvironment}
 	 *
 	 */
